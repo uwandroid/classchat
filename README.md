@@ -17,30 +17,23 @@ Firebase stores data as JSON objects. When using Firebase, your data is a big co
 
 ![Firebase App Creation](https://docs.google.com/uc?export=download&id=0BzfHZKVI-LraVEJSUWViUjB4ZXM)
 
-Once you have created your application database, you will be able to view your data via a web interface on the Firebase website. You can use this interface to add new key-value pairs to the database. Experiment with creating new objects in the tree to form the structure below. Click on some of the objects and make note of how the URL changes. 
+Note: Initially, everyone in class should create their own database. However, in our activity later on, everyone in class should use the URL above for the database. 
+
+Once you have created an application database in Firebase, you can browse your data using a web interface on the Firebase website. You can use this interface to add new key-value pairs to the database. Experiment with creating new objects in the tree to form the structure below. Click on some of the objects and make note of how the URL changes. 
 
 ![Firebase Data Browser](screenshot1.png)
 
-All of your users would connect to the key value store on a particular node. It provides a set of "listeners" for your list views so that you can listen for updates on that node. When anyone pushes new data to that node, this information is pushed to all other listeners of that node, and the ListView automatically updates without needing to refresh the page. Let's try this out.
+When the users of your application are on a particular screen, your Activity will connect to the key value store on a particular node. Firebase provides a set of "listeners" for your list views so that you can listen for updates on that node. When anyone pushes new data to that node, this information is pushed to all other listeners on that node, and the ListView automatically updates without needing to refresh the screen. Let's try this out.
 
+# Connecting an Android Application to Firebase
 
-# Creating a Firebase Account
+## Create a new Android Project
 
-[link to firebase web page]
+First you need to create a new project in Android Studio. I picked Drawer navigation, but you can start with an empty project or ListView if you prefer.
 
-To create a Firebase database, you first have to create an account. Once you have an account, create a new database. I am calling this one uw-android. Everyone in class make note of the URL for the database so we can all hit the same one. Put some data in it. Browse the database. Explain key values. Typically denormalized, need to do some of your own data management vs. a relational database in order to keep things fast.
+## Add Dependencies
 
-# Create a new Android Project
-
-I picked the Drawer navigation, but you can start with an empty project or ListView.
-
-Or clone this skeleton project.
-
-[clone button] <-- clones skeleton project, students adds code from gists throughout the lesson. skeleton project would need to be public? or private and students have access
-
-# Add the Firebase Client to your Project
-
-Add the dependency to your gradle build file. Once your grade file syncs, this will allow you to import the necessary Firebase packages into your Java code.
+Once you have created an Android project, you need to add the Firebase dependencies to your gradle build file. Once your grade file syncs, this will allow you to import the necessary Firebase packages into your Java code.
 
 ```
 dependencies {
@@ -53,7 +46,7 @@ dependencies {
 }
 ```
 
-Also, add the following to avoid a gotcha
+Also, add the following lines to your packingOptions:
 
 ```
 packagingOptions {
@@ -62,20 +55,195 @@ packagingOptions {
 }
 ```
 
-If you don't do this
+If you don't do this, you will get the following error:
 
 ```
 Error:Execution failed for task :app:transformResourcesWithMergeJavaResForDebug.
 > com.android.build.api.transform.TransformException: com.android.builder.packaging.DuplicateFileException: Duplicate files copied in APK META-INF/NOTICE
 ```
 
+## Permissions
+
+Connecting to Firebase requires an Internet connection, so be sure to add the INTERNET permission to your AndroidManifest.xml file. 
+
+```
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+## 
+
+package com.androidclass.uwchat.util;
+
+public class Constants {
+    public static final String FIREBASE_URL = "https://uw-android.firebaseio.com";
+}
+
+
+## MainActivity
+
+```
+package com.androidclass.uwchat;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import com.androidclass.uwchat.models.Message;
+import com.androidclass.uwchat.util.Constants;
+import com.firebase.client.Firebase;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Firebase uwChatReference;
+    private MessageListAdapter messageListAdapter;
+    private ListView messageListView;
+    private String messageContentText = "";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        /**
+         * Initialize the Firebase library
+         * Create Firebase object referencing the database URL, connect to messages child node
+         */
+        Firebase.setAndroidContext(this);
+        uwChatReference = new Firebase(Constants.FIREBASE_URL).child("messages");
+
+        /**
+         * Get a reference to the list view in the android layout
+         */
+        messageListView = (ListView) findViewById(R.id.message_list);
+
+        /**
+         * Set up the list adapter, controls how messages are displayed in the message list
+         * note we pass in the reference to the firebase messages, this list adapter extends a
+         * special FirebaseListAdapter that accepts a POJO model class that maps Firebase key values
+         * to a Java object for display in your Android layouts
+         */
+        messageListAdapter = new MessageListAdapter(this, Message.class, R.layout.message, uwChatReference);
+        messageListView.setAdapter(messageListAdapter);
+
+        /**
+         * Our activity came with a floating action button, let's use this to add a message
+         */
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // let's use an alert dialog and some text inputs for our message form
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("Send a Message");
+
+                // Set up the inputs
+                final EditText messageContentView = new EditText(view.getContext());
+                builder.setView(messageContentView);
+
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // when the user submits, let's get the text from the input
+                        messageContentText = messageContentView.getText().toString();
+
+                        // let's push this input into Firebase
+                        Map<String, String> message = new HashMap<String, String>();
+                        message.put("content", messageContentText);
+                        message.put("sender", "The class");
+                        uwChatReference.push().setValue(message);
+                    }
+                });
+
+                // user clicks cancel, don't send anything
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+```
+
+## MessageListAdapter
+
+```
+package com.androidclass.uwchat;
+
+import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.androidclass.uwchat.models.Message;
+import com.firebase.client.Query;
+import com.firebase.ui.FirebaseListAdapter;
+
+public class MessageListAdapter extends FirebaseListAdapter<Message> {
+
+    public MessageListAdapter(Activity activity, Class<Message> modelClass, int modelLayout, Query messageListReference) {
+        super(activity, modelClass, modelLayout, messageListReference);
+        this.mActivity = activity;
+    }
+
+    @Override
+    protected void populateView(View view, final Message message, int position) {
+        TextView messageSenderView = (TextView) view.findViewById(R.id.message_sender);
+        TextView messageContentView = (TextView) view.findViewById(R.id.message_content);
+
+        messageSenderView.setText(message.getSender());
+        messageContentView.setText(message.getContent());
+    }
+}
+```
+
+
+Firebase.setAndroidContext(this);
+
+
 Add a reference to the node. Demo to everyone in the class who is connected. We should be able to push messages to each other.
 
-Obviously you need permission to access the internet by adding this to your andorid manifest file:
 
-<uses-permission android:name="android.permission.INTERNET" />
-
-    Firebase.setAndroidContext(this);
 
 Reading data
 
