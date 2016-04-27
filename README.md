@@ -200,6 +200,8 @@ The MainActivity class ties everything together. In the onCreate() method, we in
 
 Once we have written the code to display our messages in a list, we add the logic for our Floating Action Button. When the button is clicked, we display an AlertDialog where the user can type their message. When the dialog's OK button is clicked, we push a new HashMap to our Firebase reference, and the message is sent to all connected devices instantly. 
 
+![Message Dialog](screenshot4.png)
+
 ### MainActivity
 
 ```
@@ -390,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
 
 # Conclusion
 
-As you can see, Firebase gives us a big reward without much effort by taking care of the backend server and datastore. We didn't need to write our own web API, run a server, write any AsyncTasks to hit our web API, or parse any XML or JSON.And since it is run by Google, we can trust that it is a reliable, scalable solution. Unless they kill the product all together :).
+As you can see, Firebase gives us a big reward without much effort by taking care of the backend server and datastore. We didn't need to write our own web API, run a server, write any AsyncTasks to hit our web API, or parse any XML or JSON. And since it is run by Google, we can trust that it is a reliable, scalable solution. Unless they kill the product all together :).
 
 ## Going Further: Security
 

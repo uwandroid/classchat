@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
+                    @Override   
                     public void onClick(DialogInterface dialog, int which) {
                         // when the user submits, let's get the text from the input
                         messageContentText = messageContentView.getText().toString();
