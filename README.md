@@ -80,7 +80,7 @@ Our application will consist of the following files:
 * __Message.java__ - The message model, a plain Java object. Your Firebase JSON objects will be mapped to this class.
 * __message.xml__ - The layout of a single chat message
 * __MessageListAdapter.java__ - Binds Firebase data to the Message model and displays each message row in the ListView
-* __MainActivity.java__ - Initializes Firebase, connects to the database, instantiates the ListAdapter, contains the logic for our Floating Action Button. This logic pushes a new message to the database.
+* __MainActivity.java__ - Initializes Firebase, connects to the database, instantiates the ListAdapter, and contains the logic for our Floating Action Button. When the Floating Action Button is clicked, we will display an AlertDialog that allows the user to type in a message. When the user clicks OK, we will push the new message to the database.
 * __activity_main.xml__ - The overall layout of our app's screen
 * __content_main.xml__ - Included by activity_main.xml, contains the ListView xml
 
@@ -90,7 +90,7 @@ The directory structure will look like this:
 
 ## Constants
 
-Although you can hardcode the Firebase URL directly into your Activity class, I like to create a separate class for my constants. You may have many Firebase URLs that reference different nodes in your database and you might have many Activity classes that reference these URLs, so it is nice to be able to define them in one place.
+Although you can hardcode the Firebase URL directly into your Activity class, I like to create a separate class for my constants. You may have many Firebase URLs that reference different nodes in your database and you might have many Activity classes that reference these URLs, so it is nice to be able to define them in one place. In our demo, everyone should use the same FIREBASE_URL below so that we all can see the same messages:
 
 ### util/Constants.java
 
@@ -103,6 +103,8 @@ public class Constants {
 ```
 
 ## Message Model
+
+The message model is a plain Java class. We have declared private Strings and getters that correspond to each key (sender and content) in our Firebase message structure.
 
 ### models/Message.java
 
@@ -127,7 +129,9 @@ public class Message {
 }
 ```
 
-## List Adapter
+## Message List Adapter and Message Layout
+
+We create a List Adapter that extends the FirebaseListAdapter class. In the populateView() method, we find the text views in our message.xml layout by ID and set their text equal to the corresponding data in our message model. 
 
 ### MessageListAdapter
 
@@ -160,7 +164,7 @@ public class MessageListAdapter extends FirebaseListAdapter<Message> {
 }
 ```
 
-## Message Layout
+### Message Layout
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -190,7 +194,11 @@ public class MessageListAdapter extends FirebaseListAdapter<Message> {
 </LinearLayout>
 ```
 
-## The Activity
+## Main Activity and Layout
+
+The MainActivity class ties everything together. In the onCreate() method, we initialize the Firebase library and create a new Firebase reference to Constants.FIREBASE_URL. We use the .child("messages") to specify we want to listen specifically on the "messages" node in our database. We then set up the message ListView and Adapter and pass our adapter the Message model class, the Message layout, and our Firebase reference. It then handles the magic of syncing this data to our ListView. 
+
+Once we have written the code to display our messages in a list, we add the logic for our Floating Action Button. When the button is clicked, we display an AlertDialog where the user can type their message. When the dialog's OK button is clicked, we push a new HashMap to our Firebase reference, and the message is sent to all connected devices instantly. 
 
 ### MainActivity
 
@@ -380,38 +388,13 @@ public class MainActivity extends AppCompatActivity {
 </RelativeLayout>
 ```
 
-Firebase.setAndroidContext(this);
+## Conclusion
 
+As you can see, Firebase gives us a big reward without much effort by taking care of the backend server and datastore. We didn't need to write our own web API, run a server, write any AsyncTasks to hit our web API, or parse any XML or JSON.And since it is run by Google, we can trust that it is a reliable, scalable solution. Unless they kill the product all together :).
 
-Add a reference to the node. Demo to everyone in the class who is connected. We should be able to push messages to each other.
+# Going Further: Security
 
-
-
-Reading data
-
-myFirebaseRef.child("message").addValueEventListener(new ValueEventListener() {
-  @Override
-  public void onDataChange(DataSnapshot snapshot) {
-    System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
-  }
-  @Override public void onCancelled(FirebaseError error) { }
-});
-
-http://g.recordit.co/AVc2y2TrjI.gif
-
-Writing data
-
-send a message using the FAB button
-
-    myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
-
-As you can see, Firebase gives us a big reward for not much effort by taking care of the backend. We didn't need to write our own web backend, run a server, write any AsyncTasks to hit our web backend, or parse any XML or JSON. And since it is run by Google, we can trust that it is a reliable, scalable solution. Unless they kill the product all together :).
-
-# Locking it down.
-
-That was easy, almost too easy. Surely there is a catch. Well notice that everyone in the class could connect to the database url without any authorization? They can also write back to it. By default, the door is wide open.
-
-What to do? Firebase provides a set of rules for locking down these URLs. That is left as an exercise for the student :).
+That was easy, almost too easy. Surely there is a catch. Well notice that everyone in the class could connect to the database url without any authorization? They can also write back to it. By default, the door is wide open until you add security rules to lock down the database. This is beyond the scope of this lesson, but more information can be found in the Firebase Security Guide linked below.
 
 # Links to more resources
 
