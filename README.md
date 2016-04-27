@@ -48,7 +48,7 @@ dependencies {
 }
 ```
 
-Also, add the following lines to your packingOptions:
+Also, add the following lines inside of the android {} configuration:
 
 ```
 packagingOptions {
@@ -133,7 +133,7 @@ public class Message {
 
 We create a List Adapter that extends the FirebaseListAdapter class. In the populateView() method, we find the text views in our message.xml layout by ID and set their text equal to the corresponding data in our message model. 
 
-### MessageListAdapter
+### Message List Adapter - MessageListAdapter.java
 
 ```
 package com.androidclass.uwchat;
@@ -164,7 +164,7 @@ public class MessageListAdapter extends FirebaseListAdapter<Message> {
 }
 ```
 
-### Message Layout
+### Message Layout - message.xml
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        // getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -388,11 +388,11 @@ public class MainActivity extends AppCompatActivity {
 </RelativeLayout>
 ```
 
-## Conclusion
+# Conclusion
 
 As you can see, Firebase gives us a big reward without much effort by taking care of the backend server and datastore. We didn't need to write our own web API, run a server, write any AsyncTasks to hit our web API, or parse any XML or JSON.And since it is run by Google, we can trust that it is a reliable, scalable solution. Unless they kill the product all together :).
 
-# Going Further: Security
+## Going Further: Security
 
 That was easy, almost too easy. Surely there is a catch. Well notice that everyone in the class could connect to the database url without any authorization? They can also write back to it. By default, the door is wide open until you add security rules to lock down the database. This is beyond the scope of this lesson, but more information can be found in the Firebase Security Guide linked below.
 
