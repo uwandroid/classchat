@@ -29,7 +29,9 @@ When the users of your application are on a particular screen, your Activity wil
 
 ## Create a new Android Project
 
-First you need to create a new project in Android Studio. I picked Drawer navigation, but you can start with an empty project or ListView if you prefer.
+First you need to create a new project in Android Studio. I picked Drawer navigation, but you can start with an empty project or ListView if you prefer. Our application will look like the screenshot below. All of the messages in our Firebase datastore will be displayed in a ListView. Anyone connected to the same datastore will be able to click the Floating Action Button and push a chat message to the datastore. All devices connected to the Firebase datastore will have a ListView that is synchronized to the data in the messages node.
+
+![What Our Application Will Look Like](screenshot2.png)
 
 ## Add Dependencies
 
