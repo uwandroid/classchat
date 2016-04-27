@@ -76,17 +76,17 @@ Connecting to Firebase requires an Internet connection, so be sure to add the IN
 
 Our application will consist of the following files:
 
-* _Constants.java_ - Has a constant for the FIREBASE_URL, but could contain other constants in a more complex app.
-* _Message.java_ - The message model, a plain Java object. Your Firebase JSON objects will be mapped to this class.
-* *message.xml* - The layout of a single chat message
-* _MessageListAdapter.java_ - Binds Firebase data to the Message model and displays each message row in the ListView
-* _MainActivity.java_ - Initializes Firebase, connects to the database, instantiates the ListAdapter, contains the logic for our Floating Action Button. This logic pushes a new message to the database.
-* _activity_main.xml_ - The overall layout of our app's screen
-* _content_main.xml_ - Included by activity_main.xml, contains the ListView xml
+* __Constants.java__ - Has a constant for the FIREBASE_URL, but could contain other constants in a more complex app.
+* __Message.java__ - The message model, a plain Java object. Your Firebase JSON objects will be mapped to this class.
+* __message.xml__ - The layout of a single chat message
+* __MessageListAdapter.java__ - Binds Firebase data to the Message model and displays each message row in the ListView
+* __MainActivity.java__ - Initializes Firebase, connects to the database, instantiates the ListAdapter, contains the logic for our Floating Action Button. This logic pushes a new message to the database.
+* __activity_main.xml__ - The overall layout of our app's screen
+* __content_main.xml__ - Included by activity_main.xml, contains the ListView xml
 
 The directory structure will look like this:
 
-![What Our Application Will Look Like](screenshot2.png)
+![What Our Application Will Look Like](screenshot3.png)
 
 ## Constants
 
