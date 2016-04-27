@@ -17,7 +17,7 @@ Firebase stores data as JSON objects. When using Firebase, your data is a big co
 
 ![Firebase App Creation](https://docs.google.com/uc?export=download&id=0BzfHZKVI-LraVEJSUWViUjB4ZXM)
 
-Note: Initially, everyone in class should create their own database. However, in our activity later on, everyone in class should use the URL above for the database. 
+In Firebase, databases are referenced by a URL, so each application URL must be unique. Initially, everyone in class should create their own database. However, in our activity later on, everyone in class should use the URL above so that we can push chat messages to the same database.
 
 Once you have created an application database in Firebase, you can browse your data using a web interface on the Firebase website. You can use this interface to add new key-value pairs to the database. Experiment with creating new objects in the tree to form the structure below. Click on some of the objects and make note of how the URL changes. 
 
@@ -27,9 +27,7 @@ When the users of your application are on a particular screen, your Activity wil
 
 # Connecting an Android Application to Firebase
 
-## Create a new Android Project
-
-First you need to create a new project in Android Studio. I picked Drawer navigation, but you can start with an empty project or ListView if you prefer. Our application will look like the screenshot below. All of the messages in our Firebase datastore will be displayed in a ListView. Anyone connected to the same datastore will be able to click the Floating Action Button and push a chat message to the datastore. All devices connected to the Firebase datastore will have a ListView that is synchronized to the data in the messages node.
+To get started, let's create a new project in Android Studio. I picked Drawer navigation, but you can start with an empty project or ListView if you prefer. Our application will look like the screenshot below. All of the messages in our Firebase datastore will be displayed in a ListView. Anyone connected to the same datastore will be able to click the Floating Action Button and push a chat message to the datastore. All devices connected to the Firebase datastore will have a ListView that is synchronized to the data in the messages node.
 
 ![What Our Application Will Look Like](screenshot2.png)
 
@@ -72,16 +70,85 @@ Connecting to Firebase requires an Internet connection, so be sure to add the IN
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-## 
+## The Code
 
+Let's dive into the code. Our app will consist of.
+
+## Constants
+
+Although you can hardcode the Firebase URL directly into your Activity class, I like to create a separate class for my constants. You may have many Firebase URLs that reference different nodes in your database and you might have many Activity classes that reference these URLs, so it is nice to be able to define them in one place.
+
+### util/Constants.java
+
+```
 package com.androidclass.uwchat.util;
 
 public class Constants {
     public static final String FIREBASE_URL = "https://uw-android.firebaseio.com";
 }
+```
 
+## Message Model
 
-## MainActivity
+### models/Message.java
+
+```
+package com.androidclass.uwchat.models;
+
+public class Message {
+    private String sender;  // who sent the message
+    private String content; // content of the message
+
+    public Message() {
+        // this constructor is required even though it doesn't do anything
+    }
+
+    public Message(String sender, String content) {
+        this.sender = sender;
+        this.content = content;
+    }
+
+    public String getSender() { return sender; }
+    public String getContent() { return content; }
+}
+```
+
+## List Adapter
+
+### MessageListAdapter
+
+```
+package com.androidclass.uwchat;
+
+import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.androidclass.uwchat.models.Message;
+import com.firebase.client.Query;
+import com.firebase.ui.FirebaseListAdapter;
+
+public class MessageListAdapter extends FirebaseListAdapter<Message> {
+
+    public MessageListAdapter(Activity activity, Class<Message> modelClass, int modelLayout, Query messageListReference) {
+        super(activity, modelClass, modelLayout, messageListReference);
+        this.mActivity = activity;
+    }
+
+    @Override
+    protected void populateView(View view, final Message message, int position) {
+        TextView messageSenderView = (TextView) view.findViewById(R.id.message_sender);
+        TextView messageContentView = (TextView) view.findViewById(R.id.message_content);
+
+        messageSenderView.setText(message.getSender());
+        messageContentView.setText(message.getContent());
+    }
+}
+```
+
+## The Activity
+
+### MainActivity
 
 ```
 package com.androidclass.uwchat;
@@ -208,36 +275,6 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-## MessageListAdapter
-
-```
-package com.androidclass.uwchat;
-
-import android.app.Activity;
-import android.view.View;
-import android.widget.TextView;
-
-import com.androidclass.uwchat.models.Message;
-import com.firebase.client.Query;
-import com.firebase.ui.FirebaseListAdapter;
-
-public class MessageListAdapter extends FirebaseListAdapter<Message> {
-
-    public MessageListAdapter(Activity activity, Class<Message> modelClass, int modelLayout, Query messageListReference) {
-        super(activity, modelClass, modelLayout, messageListReference);
-        this.mActivity = activity;
-    }
-
-    @Override
-    protected void populateView(View view, final Message message, int position) {
-        TextView messageSenderView = (TextView) view.findViewById(R.id.message_sender);
-        TextView messageContentView = (TextView) view.findViewById(R.id.message_content);
-
-        messageSenderView.setText(message.getSender());
-        messageContentView.setText(message.getContent());
-    }
-}
-```
 
 
 Firebase.setAndroidContext(this);
