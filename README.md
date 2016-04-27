@@ -13,13 +13,13 @@ With a standard web application or Android app, you would have to do one of two 
 
 # How does Firebase handle real-time data?
 
-Firebase stores data as JSON. When using Firebase, your data is a big collection of nested key-value pairs. It is probably best to learn how this works by actually creating a Firebase account and using its built-in database browser. So let's create an account by visiting the <a href="https://firebase.com">Firebase website</a> and signing in with Google. Once you are signed in you can create a new app where your data will live as shown in the screenshot below:
+Firebase stores data as JSON objects. When using Firebase, your data is a big collection of nested key-value pairs. It is probably best to learn how this works by actually creating a Firebase account and using its built-in database browser. So let's create an account by visiting the <a href="https://firebase.com">Firebase website</a> and signing in with Google. Once you are signed in you can create a new app where your data will live as shown in the screenshot below:
 
 ![Firebase App Creation](https://docs.google.com/uc?export=download&id=0BzfHZKVI-LraVEJSUWViUjB4ZXM)
 
 Once you have created your application database, you will be able to view your data via a web interface on the Firebase website. You can use this interface to add new key-value pairs to the database. Experiment with creating new objects in the tree to form the structure below. Click on some of the objects and make note of how the URL changes. 
 
-![Firebase Data Browser](https://docs.google.com/uc?export=download&id=BzfHZKVI-LraS0tSOWtoTlVpREk/view?usp=sharing)
+![Firebase Data Browser](screenshot1.png)
 
 All of your users would connect to the key value store on a particular node. It provides a set of "listeners" for your list views so that you can listen for updates on that node. When anyone pushes new data to that node, this information is pushed to all other listeners of that node, and the ListView automatically updates without needing to refresh the page. Let's try this out.
 
