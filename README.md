@@ -13,17 +13,19 @@ With a standard web application or Android app, you would have to do one of two 
 
 # How does Firebase handle real-time data?
 
-Firebase stores data as JSON objects. When using Firebase, your data is a big collection of nested key-value pairs. It is probably best to learn how this works by actually creating a Firebase account and using its built-in database browser. So let's create an account by visiting the <a href="https://firebase.com">Firebase website</a> and signing in with Google. Once you are signed in you can create a new app where your data will live as shown in the screenshot below:
+Firebase stores data as JSON objects. When using Firebase, your data is a big collection of nested key-value pairs. Firebase client applications can "listen" on a particular node in the database for changes and update their UI to reflect these changes. For Android applications, Firebase provides a FirebaseListAdapter class that allows you to bind Firebase data to a ListView in your app.
+
+It is probably best to see how this works by actually creating a Firebase account and using its built-in database browser. So let's create an account by visiting the <a href="https://firebase.com">Firebase website</a> and signing in with Google. Once you are signed in you can create a new app where your data will live as shown in the screenshot below:
 
 ![Firebase App Creation](https://docs.google.com/uc?export=download&id=0BzfHZKVI-LraVEJSUWViUjB4ZXM)
 
-In Firebase, databases are referenced by a URL, so each application URL must be unique. Initially, everyone in class should create their own database. However, in our activity later on, everyone in class should use the URL above so that we can push chat messages to the same database.
+In Firebase, you connect to a database by reference a URL, so each application URL must be unique. Initially, everyone in class should create their own database. However, in our activity later on, everyone in class should use the URL above so that we can push chat messages to the same database.
 
 Once you have created an application database in Firebase, you can browse your data using a web interface on the Firebase website. You can use this interface to add new key-value pairs to the database. Experiment with creating new objects in the tree to form the structure below. Click on some of the objects and make note of how the URL changes. 
 
 ![Firebase Data Browser](screenshot1.png)
 
-When the users of your application are on a particular screen, your Activity will connect to the key value store on a particular node. Firebase provides a set of "listeners" for your list views so that you can listen for updates on that node. When anyone pushes new data to that node, this information is pushed to all other listeners on that node, and the ListView automatically updates without needing to refresh the screen. Let's try this out.
+When the users of your application are on a particular screen, your Activity will connect to Firebase on a particular node. In our example, we will connect to "messages". When anyone pushes a new object to "messages", the object will be pushed to all other listeners on that node, and the ListView will automatically update without needing to refresh the screen. Enough talk, let's write some code.
 
 # Connecting an Android Application to Firebase
 
@@ -72,7 +74,19 @@ Connecting to Firebase requires an Internet connection, so be sure to add the IN
 
 ## The Code
 
-Let's dive into the code. Our app will consist of.
+Our application will consist of the following files:
+
+* _Constants.java_ - Has a constant for the FIREBASE_URL, but could contain other constants in a more complex app.
+* _Message.java_ - The message model, a plain Java object. Your Firebase JSON objects will be mapped to this class.
+* *message.xml* - The layout of a single chat message
+* _MessageListAdapter.java_ - Binds Firebase data to the Message model and displays each message row in the ListView
+* _MainActivity.java_ - Initializes Firebase, connects to the database, instantiates the ListAdapter, contains the logic for our Floating Action Button. This logic pushes a new message to the database.
+* _activity_main.xml_ - The overall layout of our app's screen
+* _content_main.xml_ - Included by activity_main.xml, contains the ListView xml
+
+The directory structure will look like this:
+
+![What Our Application Will Look Like](screenshot2.png)
 
 ## Constants
 
