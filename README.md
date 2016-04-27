@@ -397,18 +397,11 @@ As you can see, Firebase gives us a big reward for not much effort by taking car
 
 That was easy, almost too easy. Surely there is a catch. Well notice that everyone in the class could connect to the database url without any authorization? They can also write back to it. By default, the door is wide open.
 
-What to do? Firebase provides a set of rules for locking down these URLs. That is left as an exercise for the student :). (unless I have time to write this out today).
-
-# Web Access
-
-React + ReactFire sample code + demo.
+What to do? Firebase provides a set of rules for locking down these URLs. That is left as an exercise for the student :).
 
 # Links to more resources
 
-* link 1
-* link 2
-* link 3
+* [Firebase Android Guide](https://www.firebase.com/docs/android/guide/)
+* [Firebase Security Guide](https://www.firebase.com/docs/security/guide/)
+* [Using Firebase With Google App Engine](https://cloud.google.com/solutions/mobile/firebase-app-engine-android-studio)
 
-# Exercises
-
-[ include one or more assignments ]
