@@ -1,3 +1,7 @@
+# Firebase Tutorial
+
+By Larry Kubin
+
 # What is Firebase?
 
 Firebase is a "backend as a service" owned by Google. It provides a real-time database and API that allows developers to store and sync data across multiple clients.
